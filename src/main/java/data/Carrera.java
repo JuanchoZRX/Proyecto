@@ -12,14 +12,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Table("carrera")
 public class Carrera {
-
     @Id
     private Long id;
-
     private String nombre;
-
     private LocalDate fecha;
-
     @Column("circuito_id")
     private Long circuitoId;
 }

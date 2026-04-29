@@ -13,9 +13,7 @@ public class Conductor {
 
     @Id
     private Long id;
-
     private String nombre;
-
     @Column("equipo_id")
     private Long equipoId;
 }

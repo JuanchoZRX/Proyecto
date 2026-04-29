@@ -10,21 +10,13 @@ import org.springframework.data.relational.core.mapping.Column;
 @NoArgsConstructor
 @Table("resultado_carrera")
 public class ResultadoCarrera {
-
     @Id
     private Long id;
-
     @Column("carrera_id")
     private Long carreraId;
-
     @Column("conductor_id")
     private Long conductorId;
-
     private Integer posicion;
-
     private Integer puntos;
-
     private String tiempo;
-
-    private Boolean abandono;
 }

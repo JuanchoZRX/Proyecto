@@ -12,6 +12,5 @@ public class Equipo {
 
     @Id
     private Long id;
-
     private String nombre;
 }

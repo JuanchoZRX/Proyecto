@@ -9,11 +9,8 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 @Table("usuario")
 public class Usuario {
-
     @Id
     private Long id;
-
     private String nombre;
-
     private String email;
 }

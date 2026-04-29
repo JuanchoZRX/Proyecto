@@ -10,12 +10,9 @@ import org.springframework.data.relational.core.mapping.Column;
 @NoArgsConstructor
 @Table("auto")
 public class Auto {
-
     @Id
     private Long id;
-
     private String modelo;
-
     @Column("equipo_id")
     private Long equipoId;
 }
