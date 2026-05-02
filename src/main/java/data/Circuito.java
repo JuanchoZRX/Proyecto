@@ -9,7 +9,6 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 @Table("circuito")
 public class Circuito {
-
     @Id
     private Long id;
     private String nombre;
