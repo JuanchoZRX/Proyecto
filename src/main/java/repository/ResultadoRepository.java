@@ -6,5 +6,5 @@ import org.springframework.data.jdbc.repository.query.Query;
 import java.util.List;
 
 public interface ResultadoRepository extends CrudRepository<ResultadoCarrera, Long> {
-    List<ResultadoCarrera> findByCarrera(Long carreraId);
+	List<ResultadoCarrera> findByCarreraId(Long carreraId);
 }

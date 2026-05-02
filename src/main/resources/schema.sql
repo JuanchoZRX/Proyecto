@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS equipo (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS auto (
+    id SERIAL PRIMARY KEY,
+    modelo VARCHAR(100) NOT NULL,
+    equipo_id INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS conductor (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    equipo_id INT NOT NULL
+);
