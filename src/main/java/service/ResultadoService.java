@@ -91,9 +91,5 @@ public class ResultadoService {
         if(resultado.getPuntos()<0){
             throw new RuntimeException("Los puntos no pueden ser negativos");
         }
-
-        if(resultado.getTiempo() <= 0){
-            throw new RuntimeException("El tiempo debe ser mayor a 0");
-        }
     }
 }

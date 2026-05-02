@@ -18,5 +18,5 @@ public class ResultadoCarrera {
     private Long conductorId;
     private Integer posicion;
     private Integer puntos;
-    private Integer tiempo;
+    private String tiempo;
 }
