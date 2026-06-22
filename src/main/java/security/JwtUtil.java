@@ -35,7 +35,7 @@ public class JwtUtil {
      * Extrae todos los claims del token (lanza excepción si el token es inválido o expiró).
      */
     public Claims extractClaims(String token) {
-        return Jwts.parserBuilder()
+        return Jwts.parser()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
