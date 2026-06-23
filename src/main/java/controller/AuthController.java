@@ -1,92 +1,65 @@
 package controller;
 
+import service.dto.AuthResponseDTO;
+import service.dto.LoginRequestDTO;
+import service.dto.RegisterRequestDTO;
 import data.Usuario;
-import repository.UsuarioRepository;
 import security.JwtUtil;
-import org.springframework.http.HttpStatus;
+import service.UsuarioService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin(origins = "*")
 public class AuthController {
 
-    private final UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
     private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder;
 
-    public AuthController(UsuarioRepository usuarioRepository,
-                          JwtUtil jwtUtil,
-                          PasswordEncoder passwordEncoder) {
-        this.usuarioRepository = usuarioRepository;
+    public AuthController(UsuarioService usuarioService,
+                          JwtUtil jwtUtil) {
+        this.usuarioService = usuarioService;
         this.jwtUtil = jwtUtil;
-        this.passwordEncoder = passwordEncoder;
     }
 
-    /**
-     * POST /auth/login
-     * Body: { "username": "admin", "password": "1234" }
-     * Response: { "token": "eyJ...", "role": "ADMIN", "username": "admin" }
-     */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Usuario loginRequest) {
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginRequestDTO request) {
 
-        Optional<Usuario> usuarioOpt =
-                usuarioRepository.findByUsername(loginRequest.getUsername());
-
-        if (usuarioOpt.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Usuario no encontrado"));
-        }
-
-        Usuario usuario = usuarioOpt.get();
-
-        if (!passwordEncoder.matches(loginRequest.getPassword(), usuario.getPassword())) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Contraseña incorrecta"));
-        }
+        Usuario usuario = usuarioService.validarLogin(
+                request.getUsername(),
+                request.getPassword()
+        );
 
         String token = jwtUtil.generateToken(
                 usuario.getUsername(),
                 usuario.getRole().name()
         );
 
-        return ResponseEntity.ok(Map.of(
-                "token", token,
-                "role", usuario.getRole().name(),
-                "username", usuario.getUsername()
-        ));
+        return ResponseEntity.ok(
+                new AuthResponseDTO(
+                        token,
+                        usuario.getUsername(),
+                        usuario.getRole().name()
+                )
+        );
     }
 
-    /**
-     * POST /auth/register  (solo ADMIN puede crear usuarios — protegido en SecurityConfig)
-     * Body: { "username": "nuevo", "password": "clave", "role": "USER" }
-     */
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Usuario nuevoUsuario) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
 
-        if (usuarioRepository.findByUsername(nuevoUsuario.getUsername()).isPresent()) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "El username ya existe"));
-        }
+        Usuario creado = usuarioService.registrar(
+                request.getUsername(),
+                request.getPassword(),
+                request.getRole()
+        );
 
-        nuevoUsuario.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));
-        Usuario guardado = usuarioRepository.save(nuevoUsuario);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(Map.of(
-                        "id", guardado.getId(),
-                        "username", guardado.getUsername(),
-                        "role", guardado.getRole().name()
-                ));
+        return ResponseEntity.ok(Map.of(
+                "id", creado.getId(),
+                "username", creado.getUsername(),
+                "role", creado.getRole().name()
+        ));
     }
 }
