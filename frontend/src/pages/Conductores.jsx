@@ -59,7 +59,7 @@ export default function Conductores() {
     <Layout>
       <div className="page-header">
         <div>
-          <h1 className="page-title">🧑‍✈️ Conductores</h1>
+          <h1 className="page-title"> Conductores</h1>
           <p className="page-subtitle">{items.length} conductor{items.length !== 1 ? "es" : ""} registrado{items.length !== 1 ? "s" : ""}</p>
         </div>
         {isAdmin() && (

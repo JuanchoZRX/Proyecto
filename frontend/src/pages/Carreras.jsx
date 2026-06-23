@@ -61,7 +61,7 @@ export default function Carreras() {
     <Layout>
       <div className="page-header">
         <div>
-          <h1 className="page-title">🏁 Carreras</h1>
+          <h1 className="page-title"> Carreras</h1>
           <p className="page-subtitle">{carreras.length} carrera{carreras.length !== 1 ? "s" : ""} registrada{carreras.length !== 1 ? "s" : ""}</p>
         </div>
         {isAdmin() && (

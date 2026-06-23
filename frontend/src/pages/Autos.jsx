@@ -59,7 +59,7 @@ export default function Autos() {
     <Layout>
       <div className="page-header">
         <div>
-          <h1 className="page-title">🚗 Autos</h1>
+          <h1 className="page-title"> Autos</h1>
           <p className="page-subtitle">{items.length} auto{items.length !== 1 ? "s" : ""} registrado{items.length !== 1 ? "s" : ""}</p>
         </div>
         {isAdmin() && (
