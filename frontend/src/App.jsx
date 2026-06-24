@@ -10,6 +10,9 @@ import Conductores from "./pages/Conductores";
 import Equipos     from "./pages/Equipos";
 import Autos       from "./pages/Autos";
 import Usuarios    from "./pages/Usuarios";
+import Resultados from "./pages/Resultados";
+
+
 
 export default function App() {
   return (
@@ -37,6 +40,9 @@ export default function App() {
           } />
           <Route path="/autos" element={
             <ProtectedRoute><Autos /></ProtectedRoute>
+          } />
+          <Route path="/resultados" element={
+            <ProtectedRoute><Resultados /></ProtectedRoute>
           } />
 
           {/* Admin only */}

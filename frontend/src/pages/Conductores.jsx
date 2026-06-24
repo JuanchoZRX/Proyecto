@@ -16,6 +16,7 @@ export default function Conductores() {
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
+  const [search, setSearch] = useState("");
 
   const load = async () => {
     try {
@@ -55,80 +56,95 @@ export default function Conductores() {
 
   const equipoNombre = (id) => equipos.find((e) => e.id === id)?.nombre || `#${id}`;
 
+  const filtered = items.filter((c) =>
+      c.nombre.toLowerCase().includes(search.toLowerCase()) ||
+      equipoNombre(c.equipoId).toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <Layout>
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">🧑‍✈️ Conductores</h1>
-          <p className="page-subtitle">{items.length} conductor{items.length !== 1 ? "es" : ""} registrado{items.length !== 1 ? "s" : ""}</p>
+      <Layout>
+        <div className="page-header">
+          <div>
+            <h1 className="page-title">🧑‍✈️ Conductores</h1>
+            <p className="page-subtitle">
+              {filtered.length} de {items.length} conductor{items.length !== 1 ? "es" : ""} registrado{items.length !== 1 ? "s" : ""}
+            </p>
+          </div>
+          <input
+              className="search-input"
+              placeholder="Buscar conductor o equipo..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+          />
+          {isAdmin() && (
+              <button className="btn btn-primary" onClick={openCreate}>+ Nuevo Conductor</button>
+          )}
         </div>
-        {isAdmin() && (
-          <button className="btn btn-primary" onClick={openCreate}>+ Nuevo Conductor</button>
-        )}
-      </div>
 
-      {loading ? (
-        <p style={{ color: "var(--text-muted)" }}>Cargando...</p>
-      ) : items.length === 0 ? (
-        <div className="empty-state">Sin conductores registrados.</div>
-      ) : (
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Equipo</th>
-                {isAdmin() && <th>Acciones</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((c) => (
-                <tr key={c.id}>
-                  <td style={{ color: "var(--text-muted)" }}>#{c.id}</td>
-                  <td><strong>{c.nombre}</strong></td>
-                  <td>{equipoNombre(c.equipoId)}</td>
-                  {isAdmin() && (
-                    <td>
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button className="btn btn-secondary btn-sm" onClick={() => openEdit(c)}>Editar</button>
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(c.id)}>Eliminar</button>
-                      </div>
-                    </td>
-                  )}
+        {loading ? (
+            <p style={{ color: "var(--text-muted)" }}>Cargando...</p>
+        ) : filtered.length === 0 ? (
+            <div className="empty-state">
+              {items.length === 0 ? "Sin conductores registrados." : `Sin resultados para "${search}".`}
+            </div>
+        ) : (
+            <div className="table-wrap">
+              <table>
+                <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Equipo</th>
+                  {isAdmin() && <th>Acciones</th>}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {modal && (
-        <Modal title={modal === "create" ? "Nuevo Conductor" : "Editar Conductor"} onClose={closeModal}>
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <div className="form-group">
-              <label>Nombre</label>
-              <input name="nombre" value={form.nombre} onChange={handleChange} required placeholder="Max Verstappen" />
-            </div>
-            <div className="form-group">
-              <label>Equipo</label>
-              <select name="equipoId" value={form.equipoId} onChange={handleChange} required>
-                <option value="">— Seleccionar —</option>
-                {equipos.map((e) => (
-                  <option key={e.id} value={e.id}>{e.nombre}</option>
+                </thead>
+                <tbody>
+                {filtered.map((c) => (
+                    <tr key={c.id}>
+                      <td style={{ color: "var(--text-muted)" }}>#{c.id}</td>
+                      <td><strong>{c.nombre}</strong></td>
+                      <td>{equipoNombre(c.equipoId)}</td>
+                      {isAdmin() && (
+                          <td>
+                            <div style={{ display: "flex", gap: 8 }}>
+                              <button className="btn btn-secondary btn-sm" onClick={() => openEdit(c)}>Editar</button>
+                              <button className="btn btn-danger btn-sm" onClick={() => handleDelete(c.id)}>Eliminar</button>
+                            </div>
+                          </td>
+                      )}
+                    </tr>
                 ))}
-              </select>
+                </tbody>
+              </table>
             </div>
-            {error && <p className="error-msg">{error}</p>}
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button type="button" className="btn btn-secondary" onClick={closeModal}>Cancelar</button>
-              <button type="submit" className="btn btn-primary" disabled={saving}>
-                {saving ? "Guardando..." : "Guardar"}
-              </button>
-            </div>
-          </form>
-        </Modal>
-      )}
-    </Layout>
+        )}
+
+        {modal && (
+            <Modal title={modal === "create" ? "Nuevo Conductor" : "Editar Conductor"} onClose={closeModal}>
+              <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div className="form-group">
+                  <label>Nombre</label>
+                  <input name="nombre" value={form.nombre} onChange={handleChange} required placeholder="Max Verstappen" />
+                </div>
+                <div className="form-group">
+                  <label>Equipo</label>
+                  <select name="equipoId" value={form.equipoId} onChange={handleChange} required>
+                    <option value="">— Seleccionar —</option>
+                    {equipos.map((e) => (
+                        <option key={e.id} value={e.id}>{e.nombre}</option>
+                    ))}
+                  </select>
+                </div>
+                {error && <p className="error-msg">{error}</p>}
+                <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                  <button type="button" className="btn btn-secondary" onClick={closeModal}>Cancelar</button>
+                  <button type="submit" className="btn btn-primary" disabled={saving}>
+                    {saving ? "Guardando..." : "Guardar"}
+                  </button>
+                </div>
+              </form>
+            </Modal>
+        )}
+      </Layout>
   );
 }

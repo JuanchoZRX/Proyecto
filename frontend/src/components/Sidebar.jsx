@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { to: "/conductores", label: "Conductores",   icon: "🧑‍✈️" },
   { to: "/equipos",     label: "Equipos",       icon: "🔧" },
   { to: "/autos",       label: "Autos",         icon: "🚗" },
+  { to: "/resultados",  label: "Resultados",    icon: "🏆" },
 ];
 
 const ADMIN_ITEMS = [

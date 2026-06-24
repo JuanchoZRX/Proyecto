@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import repository.ResultadoRepository;
 import repository.CarreraRepository;
 import repository.ConductorRepository;
+import repository.AutoRepository;
 import data.ResultadoCarrera;
 
 import java.util.List;
@@ -15,18 +16,21 @@ public class ResultadoService {
     private final ResultadoRepository repo;
     private final CarreraRepository carreraRepo;
     private final ConductorRepository conductorRepo;
+    private final AutoRepository autoRepo;
 
     public ResultadoService(ResultadoRepository repo,
                             CarreraRepository carreraRepo,
-                            ConductorRepository conductorRepo){
+                            ConductorRepository conductorRepo,
+                            AutoRepository autoRepo){
         this.repo = repo;
         this.carreraRepo = carreraRepo;
         this.conductorRepo = conductorRepo;
+        this.autoRepo = autoRepo;
     }
 
 
     public ResultadoCarrera create(ResultadoCarrera resultado){
-        validarResultado(resultado);
+        validarResultado(resultado, null);
         return repo.save(resultado);
     }
 
@@ -48,7 +52,7 @@ public class ResultadoService {
         if(!repo.existsById(id)){
             throw new RuntimeException("Resultado no encontrado con id: " + id);
         }
-        validarResultado(nuevo);
+        validarResultado(nuevo, id);
         nuevo.setId(id);
         return repo.save(nuevo);
     }
@@ -62,7 +66,7 @@ public class ResultadoService {
     }
 
 
-    private void validarResultado(ResultadoCarrera resultado){
+    private void validarResultado(ResultadoCarrera resultado, Long idActual){
         if(resultado == null){
             throw new RuntimeException("El resultado no puede ser null");
         }
@@ -70,7 +74,6 @@ public class ResultadoService {
         if(resultado.getCarreraId() == null){
             throw new RuntimeException("Debe indicar la carrera");
         }
-
 
         if(!carreraRepo.existsById(resultado.getCarreraId())){
             throw new RuntimeException("La carrera no existe");
@@ -84,12 +87,28 @@ public class ResultadoService {
             throw new RuntimeException("El conductor no existe");
         }
 
+        if(resultado.getAutoId() == null){
+            throw new RuntimeException("Debe indicar el auto");
+        }
+
+        if(!autoRepo.existsById(resultado.getAutoId())){
+            throw new RuntimeException("El auto no existe");
+        }
+
         if(resultado.getPosicion() <= 0){
             throw new RuntimeException("La posición debe ser mayor a 0");
         }
 
-        if(resultado.getPuntos()<0){
+        if(resultado.getPuntos() < 0){
             throw new RuntimeException("Los puntos no pueden ser negativos");
+        }
+
+        Optional<ResultadoCarrera> existente = repo.findByCarreraIdAndPosicion(
+                resultado.getCarreraId(), resultado.getPosicion());
+
+        if(existente.isPresent() && !existente.get().getId().equals(idActual)){
+            throw new RuntimeException("Ya existe un conductor en la posición "
+                    + resultado.getPosicion() + " de esta carrera");
         }
     }
 }

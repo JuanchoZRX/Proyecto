@@ -24,4 +24,23 @@ public class AutoService {
     public Iterable<Auto> getByEquipo(Long equipoId) {
         return repo.findByEquipoId(equipoId);
     }
+
+    public Auto getById(Long id) {
+        return repo.findById(id).orElse(null);
+    }
+
+    public Auto update(Long id, Auto a) {
+        if (!repo.existsById(id)) {
+            throw new RuntimeException("Auto no encontrado con id: " + id);
+        }
+        a.setId(id);
+        return repo.save(a);
+    }
+
+    public void delete(Long id) {
+        if (!repo.existsById(id)) {
+            throw new RuntimeException("Auto no encontrado con id: " + id);
+        }
+        repo.deleteById(id);
+    }
 }

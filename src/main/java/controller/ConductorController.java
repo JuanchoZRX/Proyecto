@@ -1,5 +1,6 @@
 package controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import data.Conductor;
 import service.ConductorService;
@@ -27,5 +28,21 @@ public class ConductorController {
     @GetMapping("/equipo/{id}")
     public Iterable<Conductor> getByEquipo(@PathVariable Long id) {
         return service.getByEquipo(id);
+    }
+
+    @GetMapping("/{id}")
+    public Conductor getById(@PathVariable Long id) {
+        return service.getById(id);
+    }
+
+    @PutMapping("/{id}")
+    public Conductor update(@PathVariable Long id, @RequestBody Conductor c) {
+        return service.update(id, c);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
