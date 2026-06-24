@@ -1,5 +1,6 @@
 package controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import data.Auto;
 import service.AutoService;
@@ -20,8 +21,20 @@ public class AutoController {
     }
 
     @PostMapping
-    public Auto create(@RequestBody Auto a) {
-        return service.save(a);
+    public ResponseEntity<Auto> create(@RequestBody Auto a) {
+        return ResponseEntity.status(201).body(service.save(a));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Auto> update(@PathVariable Long id,
+                                       @RequestBody Auto a) {
+        return ResponseEntity.ok(service.update(id, a));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/equipo/{id}")
