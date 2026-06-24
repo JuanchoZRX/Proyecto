@@ -31,19 +31,9 @@ public class EquipoController {
     }
 
     @PutMapping("/{id}")
-    public Equipo update(@PathVariable Long id, @RequestBody Equipo e) {
-        return service.update(id, e);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping("/{id}")
-    public Equipo update(@PathVariable Long id, @RequestBody Equipo e) {
-        return service.update(id, e);
+    public ResponseEntity<Equipo> update(@PathVariable Long id,
+                                         @RequestBody Equipo e) {
+        return ResponseEntity.ok(service.update(id, e));
     }
 
     @DeleteMapping("/{id}")
