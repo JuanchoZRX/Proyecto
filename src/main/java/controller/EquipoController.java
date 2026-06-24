@@ -40,4 +40,15 @@ public class EquipoController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    public Equipo update(@PathVariable Long id, @RequestBody Equipo e) {
+        return service.update(id, e);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }
