@@ -21,13 +21,36 @@ public class EquipoController {
     }
 
     @PostMapping
-    public Equipo create(@RequestBody Equipo e) {
-        return service.save(e);
+    public ResponseEntity<Equipo> create(@RequestBody Equipo e) {
+        return ResponseEntity.status(201).body(service.save(e));
     }
 
     @GetMapping("/{id}")
-    public Equipo getById(@PathVariable Long id) {
-        return service.getById(id);
+    public ResponseEntity<Equipo> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Equipo> update(@PathVariable Long id,
+                                         @RequestBody Equipo e) {
+        return ResponseEntity.ok(service.update(id, e));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public Equipo update(@PathVariable Long id, @RequestBody Equipo e) {
+        return service.update(id, e);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")

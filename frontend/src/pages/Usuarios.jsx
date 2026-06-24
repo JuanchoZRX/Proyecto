@@ -38,7 +38,7 @@ export default function Usuarios() {
     <Layout>
       <div className="page-header">
         <div>
-          <h1 className="page-title">👥 Usuarios</h1>
+          <h1 className="page-title"> Usuarios</h1>
           <p className="page-subtitle">Gestión de accesos al sistema</p>
         </div>
         <button className="btn btn-primary" onClick={() => setModal(true)}>+ Nuevo Usuario</button>
