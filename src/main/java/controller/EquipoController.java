@@ -1,5 +1,6 @@
 package controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import data.Equipo;
 import service.EquipoService;
@@ -27,5 +28,16 @@ public class EquipoController {
     @GetMapping("/{id}")
     public Equipo getById(@PathVariable Long id) {
         return service.getById(id);
+    }
+
+    @PutMapping("/{id}")
+    public Equipo update(@PathVariable Long id, @RequestBody Equipo e) {
+        return service.update(id, e);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

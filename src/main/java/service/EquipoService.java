@@ -24,4 +24,19 @@ public class EquipoService {
     public Equipo getById(Long id) {
         return repo.findById(id).orElse(null);
     }
+
+    public Equipo update(Long id, Equipo e) {
+        if (!repo.existsById(id)) {
+            throw new RuntimeException("Equipo no encontrado con id: " + id);
+        }
+        e.setId(id);
+        return repo.save(e);
+    }
+
+    public void delete(Long id) {
+        if (!repo.existsById(id)) {
+            throw new RuntimeException("Equipo no encontrado con id: " + id);
+        }
+        repo.deleteById(id);
+    }
 }

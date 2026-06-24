@@ -16,6 +16,7 @@ export default function Autos() {
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
+  const [search, setSearch] = useState("");
 
   const load = async () => {
     try {
@@ -55,80 +56,95 @@ export default function Autos() {
 
   const equipoNombre = (id) => equipos.find((e) => e.id === id)?.nombre || `#${id}`;
 
+  const filtered = items.filter((a) =>
+      a.modelo.toLowerCase().includes(search.toLowerCase()) ||
+      equipoNombre(a.equipoId).toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <Layout>
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">🚗 Autos</h1>
-          <p className="page-subtitle">{items.length} auto{items.length !== 1 ? "s" : ""} registrado{items.length !== 1 ? "s" : ""}</p>
+      <Layout>
+        <div className="page-header">
+          <div>
+            <h1 className="page-title">🚗 Autos</h1>
+            <p className="page-subtitle">
+              {filtered.length} de {items.length} auto{items.length !== 1 ? "s" : ""} registrado{items.length !== 1 ? "s" : ""}
+            </p>
+          </div>
+          <input
+              className="search-input"
+              placeholder="Buscar auto o equipo..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+          />
+          {isAdmin() && (
+              <button className="btn btn-primary" onClick={openCreate}>+ Nuevo Auto</button>
+          )}
         </div>
-        {isAdmin() && (
-          <button className="btn btn-primary" onClick={openCreate}>+ Nuevo Auto</button>
-        )}
-      </div>
 
-      {loading ? (
-        <p style={{ color: "var(--text-muted)" }}>Cargando...</p>
-      ) : items.length === 0 ? (
-        <div className="empty-state">Sin autos registrados.</div>
-      ) : (
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Modelo</th>
-                <th>Equipo</th>
-                {isAdmin() && <th>Acciones</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((a) => (
-                <tr key={a.id}>
-                  <td style={{ color: "var(--text-muted)" }}>#{a.id}</td>
-                  <td><strong>{a.modelo}</strong></td>
-                  <td>{equipoNombre(a.equipoId)}</td>
-                  {isAdmin() && (
-                    <td>
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button className="btn btn-secondary btn-sm" onClick={() => openEdit(a)}>Editar</button>
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(a.id)}>Eliminar</button>
-                      </div>
-                    </td>
-                  )}
+        {loading ? (
+            <p style={{ color: "var(--text-muted)" }}>Cargando...</p>
+        ) : filtered.length === 0 ? (
+            <div className="empty-state">
+              {items.length === 0 ? "Sin autos registrados." : `Sin resultados para "${search}".`}
+            </div>
+        ) : (
+            <div className="table-wrap">
+              <table>
+                <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Modelo</th>
+                  <th>Equipo</th>
+                  {isAdmin() && <th>Acciones</th>}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {modal && (
-        <Modal title={modal === "create" ? "Nuevo Auto" : "Editar Auto"} onClose={closeModal}>
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <div className="form-group">
-              <label>Modelo</label>
-              <input name="modelo" value={form.modelo} onChange={handleChange} required placeholder="RB20" />
-            </div>
-            <div className="form-group">
-              <label>Equipo</label>
-              <select name="equipoId" value={form.equipoId} onChange={handleChange} required>
-                <option value="">— Seleccionar —</option>
-                {equipos.map((e) => (
-                  <option key={e.id} value={e.id}>{e.nombre}</option>
+                </thead>
+                <tbody>
+                {filtered.map((a) => (
+                    <tr key={a.id}>
+                      <td style={{ color: "var(--text-muted)" }}>#{a.id}</td>
+                      <td><strong>{a.modelo}</strong></td>
+                      <td>{equipoNombre(a.equipoId)}</td>
+                      {isAdmin() && (
+                          <td>
+                            <div style={{ display: "flex", gap: 8 }}>
+                              <button className="btn btn-secondary btn-sm" onClick={() => openEdit(a)}>Editar</button>
+                              <button className="btn btn-danger btn-sm" onClick={() => handleDelete(a.id)}>Eliminar</button>
+                            </div>
+                          </td>
+                      )}
+                    </tr>
                 ))}
-              </select>
+                </tbody>
+              </table>
             </div>
-            {error && <p className="error-msg">{error}</p>}
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button type="button" className="btn btn-secondary" onClick={closeModal}>Cancelar</button>
-              <button type="submit" className="btn btn-primary" disabled={saving}>
-                {saving ? "Guardando..." : "Guardar"}
-              </button>
-            </div>
-          </form>
-        </Modal>
-      )}
-    </Layout>
+        )}
+
+        {modal && (
+            <Modal title={modal === "create" ? "Nuevo Auto" : "Editar Auto"} onClose={closeModal}>
+              <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div className="form-group">
+                  <label>Modelo</label>
+                  <input name="modelo" value={form.modelo} onChange={handleChange} required placeholder="RB20" />
+                </div>
+                <div className="form-group">
+                  <label>Equipo</label>
+                  <select name="equipoId" value={form.equipoId} onChange={handleChange} required>
+                    <option value="">— Seleccionar —</option>
+                    {equipos.map((e) => (
+                        <option key={e.id} value={e.id}>{e.nombre}</option>
+                    ))}
+                  </select>
+                </div>
+                {error && <p className="error-msg">{error}</p>}
+                <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                  <button type="button" className="btn btn-secondary" onClick={closeModal}>Cancelar</button>
+                  <button type="submit" className="btn btn-primary" disabled={saving}>
+                    {saving ? "Guardando..." : "Guardar"}
+                  </button>
+                </div>
+              </form>
+            </Modal>
+        )}
+      </Layout>
   );
 }

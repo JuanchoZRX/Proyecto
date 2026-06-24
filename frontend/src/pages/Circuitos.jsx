@@ -15,6 +15,7 @@ export default function Circuitos() {
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
+  const [search, setSearch] = useState("");
 
   const load = async () => {
     try { setItems(await circuitosApi.getAll()); }
@@ -49,81 +50,96 @@ export default function Circuitos() {
     catch (err) { alert(err.message || "Error al eliminar."); }
   };
 
+  const filtered = items.filter((c) =>
+      c.nombre.toLowerCase().includes(search.toLowerCase()) ||
+      c.pais.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <Layout>
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">🗺️ Circuitos</h1>
-          <p className="page-subtitle">{items.length} circuito{items.length !== 1 ? "s" : ""} registrado{items.length !== 1 ? "s" : ""}</p>
+      <Layout>
+        <div className="page-header">
+          <div>
+            <h1 className="page-title">🗺️ Circuitos</h1>
+            <p className="page-subtitle">
+              {filtered.length} de {items.length} circuito{items.length !== 1 ? "s" : ""} registrado{items.length !== 1 ? "s" : ""}
+            </p>
+          </div>
+          <input
+              className="search-input"
+              placeholder="Buscar circuito o país..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+          />
+          {isAdmin() && (
+              <button className="btn btn-primary" onClick={openCreate}>+ Nuevo Circuito</button>
+          )}
         </div>
-        {isAdmin() && (
-          <button className="btn btn-primary" onClick={openCreate}>+ Nuevo Circuito</button>
-        )}
-      </div>
 
-      {loading ? (
-        <p style={{ color: "var(--text-muted)" }}>Cargando...</p>
-      ) : items.length === 0 ? (
-        <div className="empty-state">Sin circuitos registrados.</div>
-      ) : (
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>País</th>
-                <th>Longitud (km)</th>
-                {isAdmin() && <th>Acciones</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((c) => (
-                <tr key={c.id}>
-                  <td style={{ color: "var(--text-muted)" }}>#{c.id}</td>
-                  <td><strong>{c.nombre}</strong></td>
-                  <td>{c.pais}</td>
-                  <td>{c.longitud} km</td>
-                  {isAdmin() && (
-                    <td>
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button className="btn btn-secondary btn-sm" onClick={() => openEdit(c)}>Editar</button>
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(c.id)}>Eliminar</button>
-                      </div>
-                    </td>
-                  )}
+        {loading ? (
+            <p style={{ color: "var(--text-muted)" }}>Cargando...</p>
+        ) : filtered.length === 0 ? (
+            <div className="empty-state">
+              {items.length === 0 ? "Sin circuitos registrados." : `Sin resultados para "${search}".`}
+            </div>
+        ) : (
+            <div className="table-wrap">
+              <table>
+                <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>País</th>
+                  <th>Longitud (km)</th>
+                  {isAdmin() && <th>Acciones</th>}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+                </thead>
+                <tbody>
+                {filtered.map((c) => (
+                    <tr key={c.id}>
+                      <td style={{ color: "var(--text-muted)" }}>#{c.id}</td>
+                      <td><strong>{c.nombre}</strong></td>
+                      <td>{c.pais}</td>
+                      <td>{c.longitud} km</td>
+                      {isAdmin() && (
+                          <td>
+                            <div style={{ display: "flex", gap: 8 }}>
+                              <button className="btn btn-secondary btn-sm" onClick={() => openEdit(c)}>Editar</button>
+                              <button className="btn btn-danger btn-sm" onClick={() => handleDelete(c.id)}>Eliminar</button>
+                            </div>
+                          </td>
+                      )}
+                    </tr>
+                ))}
+                </tbody>
+              </table>
+            </div>
+        )}
 
-      {modal && (
-        <Modal title={modal === "create" ? "Nuevo Circuito" : "Editar Circuito"} onClose={closeModal}>
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <div className="form-group">
-              <label>Nombre</label>
-              <input name="nombre" value={form.nombre} onChange={handleChange} required placeholder="Circuit de Monaco" />
-            </div>
-            <div className="form-group">
-              <label>País</label>
-              <input name="pais" value={form.pais} onChange={handleChange} required placeholder="Mónaco" />
-            </div>
-            <div className="form-group">
-              <label>Longitud (km)</label>
-              <input name="longitud" type="number" step="0.001" min="0.1" value={form.longitud} onChange={handleChange} required placeholder="3.337" />
-            </div>
-            {error && <p className="error-msg">{error}</p>}
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button type="button" className="btn btn-secondary" onClick={closeModal}>Cancelar</button>
-              <button type="submit" className="btn btn-primary" disabled={saving}>
-                {saving ? "Guardando..." : "Guardar"}
-              </button>
-            </div>
-          </form>
-        </Modal>
-      )}
-    </Layout>
+        {modal && (
+            <Modal title={modal === "create" ? "Nuevo Circuito" : "Editar Circuito"} onClose={closeModal}>
+              <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div className="form-group">
+                  <label>Nombre</label>
+                  <input name="nombre" value={form.nombre} onChange={handleChange} required placeholder="Circuit de Monaco" />
+                </div>
+                <div className="form-group">
+                  <label>País</label>
+                  <input name="pais" value={form.pais} onChange={handleChange} required placeholder="Mónaco" />
+                </div>
+                <div className="form-group">
+                  <label>Longitud (km)</label>
+                  <input name="longitud" type="number" step="0.001" min="0.1" value={form.longitud} onChange={handleChange} required placeholder="3.337" />
+                </div>
+                {error && <p className="error-msg">{error}</p>}
+                <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                  <button type="button" className="btn btn-secondary" onClick={closeModal}>Cancelar</button>
+                  <button type="submit" className="btn btn-primary" disabled={saving}>
+                    {saving ? "Guardando..." : "Guardar"}
+                  </button>
+                </div>
+              </form>
+            </Modal>
+        )}
+      </Layout>
   );
 }

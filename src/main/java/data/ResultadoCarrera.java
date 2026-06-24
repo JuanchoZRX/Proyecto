@@ -16,6 +16,8 @@ public class ResultadoCarrera {
     private Long carreraId;
     @Column("conductor_id")
     private Long conductorId;
+    @Column("auto_id")
+    private Long autoId;
     private Integer posicion;
     private Integer puntos;
     private String tiempo;

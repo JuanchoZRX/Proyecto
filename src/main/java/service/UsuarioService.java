@@ -5,6 +5,8 @@ import repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UsuarioService {
 
@@ -17,19 +19,8 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Usuario buscarPorUsername(String username) {
-        return usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-    }
-
-    public Usuario validarLogin(String username, String password) {
-        Usuario usuario = buscarPorUsername(username);
-
-        if (!passwordEncoder.matches(password, usuario.getPassword())) {
-            throw new RuntimeException("Credenciales inválidas");
-        }
-
-        return usuario;
+    public Optional<Usuario> findByUsername(String username) {
+        return usuarioRepository.findByUsername(username);
     }
 
     public Usuario registrar(String username, String password, Usuario.Role role) {

@@ -24,4 +24,23 @@ public class ConductorService {
     public Iterable<Conductor> getByEquipo(Long equipoId) {
         return repo.findByEquipoId(equipoId);
     }
+
+    public Conductor getById(Long id) {
+        return repo.findById(id).orElse(null);
+    }
+
+    public Conductor update(Long id, Conductor c) {
+        if (!repo.existsById(id)) {
+            throw new RuntimeException("Conductor no encontrado con id: " + id);
+        }
+        c.setId(id);
+        return repo.save(c);
+    }
+
+    public void delete(Long id) {
+        if (!repo.existsById(id)) {
+            throw new RuntimeException("Conductor no encontrado con id: " + id);
+        }
+        repo.deleteById(id);
+    }
 }
