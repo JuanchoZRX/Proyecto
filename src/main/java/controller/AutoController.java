@@ -25,18 +25,6 @@ public class AutoController {
         return ResponseEntity.status(201).body(service.save(a));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Auto> update(@PathVariable Long id,
-                                       @RequestBody Auto a) {
-        return ResponseEntity.ok(service.update(id, a));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/equipo/{id}")
     public Iterable<Auto> getByEquipo(@PathVariable Long id) {
         return service.getByEquipo(id);
@@ -48,8 +36,9 @@ public class AutoController {
     }
 
     @PutMapping("/{id}")
-    public Auto update(@PathVariable Long id, @RequestBody Auto a) {
-        return service.update(id, a);
+    public ResponseEntity<Auto> update(@PathVariable Long id,
+                                       @RequestBody Auto a) {
+        return ResponseEntity.ok(service.update(id, a));
     }
 
     @DeleteMapping("/{id}")
